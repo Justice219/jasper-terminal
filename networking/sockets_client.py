@@ -29,7 +29,7 @@ class SocketsClient:
                 logger.info('Connected to the server.')
 
                 # Send a message to the server
-                await self.send_message('Hello, server!')
+                await self.send_message('ping')
                 # Start the check_for_messages loop
                 await self.check_for_messages()
         # Handle the exceptions

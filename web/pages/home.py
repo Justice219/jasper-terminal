@@ -33,4 +33,18 @@ def content(ui, app, sockets) -> None:
             </p>
             ''').style('font-size: 16px;')
 
-            ui.label('Features:').style('font-size: 20px; font-weight: bold;')
+        ui.label('incoming messages:')
+        messages = ui.column().classes('ml-4')
+        
+        async def display_messages(message: str) -> None:
+            def update_ui():
+                messages.append(ui.label(message))
+
+            ui.run(update_ui)
+
+        sockets.register_callback(display_messages)
+
+        # enter command to send to server
+        ui.input(label='Send Command', placeholder='Enter command',
+                on_change=lambda e: sockets.send_message(str(e.value)))
+        

@@ -24,7 +24,7 @@ class WebApp:
         self.app = app
         self.ui = ui
         self.router = router_c.router  # Use a more descriptive name for the router
-        self.sockets_client = SocketsClient(server_address='ws://localhost:8756')
+        self.sockets_client = SocketsClient(server_address='ws://localhost:4327')
         self.sockets_client.register_callback(self.handle_message)
         self.initialize_pages()
 
@@ -48,7 +48,7 @@ class WebApp:
         """
         @self.ui.page(path)
         def page() -> None:
-            content_callable(self.ui, self.app, self.sockets)
+            content_callable(self.ui, self.app, self.sockets_client)
 
     def notify(self, message: str, notification_type: str) -> None:
         """Sends a notification through the UI.
@@ -68,10 +68,9 @@ class WebApp:
     async def handle_message(self, message: str):
         command, *args = message.split(" ")
         action_map = {
-            "cleanTempFiles": lambda: self.cleaner.clean_temp_files(message),
-            "cleanCacheFiles": self.cleaner.clean_cache_files,  # Assumes no args needed
-            "emptyRecycleBin": self.cleaner.empty_recycle_bin,  # Assumes no args needed
-            "cleanBrowserData": lambda: self.cleaner.clean_browser_data(message),
+            "ping": lambda: self.sockets_client.send_message("PONG"),
+            "PONG": lambda: self.notify("Successful Server Handshake", "info"),
+            "RECEIVED": lambda: self.notify(f"Received message: {' '.join(args)}", "info"),
         }
 
         if command in action_map:

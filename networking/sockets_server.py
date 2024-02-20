@@ -4,6 +4,7 @@ from typing import Set, Dict, Any
 import websockets
 from websockets.server import WebSocketServerProtocol
 from nicegui import ui
+import socket
 
 CONNECTIONS: Set[WebSocketServerProtocol] = set()
 
@@ -18,15 +19,22 @@ class SocketsServer():
 
     # Define the start method
     async def handle_message(self, websocket: WebSocketServerProtocol) -> None:
-        while True:
+        while True:       
             try:
                 # Receive the message from the client
                 message = await websocket.recv()
                 logger.info(f"Received message: {message}")
 
-                # Send the message to all connected clients
-                response = f"SERVER received: {message}"
-                await websocket.send(response)
+                # command map
+                command, *args = message.split(" ")
+                action_map: Dict[str, Any] = {
+                    "ping": lambda: self.send_message("PONG : Successful Client Handshake"),
+                    "stop": lambda: self.stop_server(),
+                }
+
+                if command in action_map:
+                    action = action_map[command]
+                    await action()
 
             # Handle the exceptions
             except websockets.exceptions.ConnectionClosed as e:
@@ -63,12 +71,14 @@ class SocketsServer():
     # Define the start_server method
     async def start_server(self) -> None:
         # Start the WebSocket server
-        server = await websockets.serve(self.handle_connection, "localhost", 8756)
+        server = await websockets.serve(self.handle_connection, "localhost", 4327)
         # Log the server start
         logger.info("WebSocket server started")
 
         # Keep the server running until it is closed
         await server.wait_closed()
+        # Sometimes the server will not close properly
+
 
     async def stop_server(self) -> None:
         # Close all the connections
@@ -76,3 +86,5 @@ class SocketsServer():
             await websocket.close()
         # Log the server stop
         logger.info("WebSocket server stopped")
+        # exit the program
+        exit(0)
