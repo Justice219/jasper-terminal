@@ -24,7 +24,7 @@ class WebApp:
         self.app = app
         self.ui = ui
         self.router = router_c.router  # Use a more descriptive name for the router
-        self.sockets_client = SocketsClient(server_address='ws://localhost:8765')
+        self.sockets_client = SocketsClient(server_address='ws://localhost:8756')
         self.sockets_client.register_callback(self.handle_message)
         self.initialize_pages()
 

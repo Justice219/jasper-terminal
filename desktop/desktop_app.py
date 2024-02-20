@@ -19,10 +19,6 @@ class DesktopApp:
     async def run(self):
         print(f"{self.name} is running")
         await self.sockets_server.start_server()
-    
-async def Main():
-    app = DesktopApp()
-    await app.run()
 
-if __name__ == "__main__":
-    asyncio.run(Main())
+app = DesktopApp()
+asyncio.run(app.run())

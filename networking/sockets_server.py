@@ -63,7 +63,7 @@ class SocketsServer():
     # Define the start_server method
     async def start_server(self) -> None:
         # Start the WebSocket server
-        server = await websockets.serve(self.handle_connection, "localhost", 8765)
+        server = await websockets.serve(self.handle_connection, "localhost", 8756)
         # Log the server start
         logger.info("WebSocket server started")
 
