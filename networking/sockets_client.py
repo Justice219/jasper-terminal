@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO, format='CLIENT: %(message)s')
 logger = logging.getLogger(__name__)
 
 # Create the SocketClient class
-class SocketClient:
+class SocketsClient:
     def __init__(self, server_address: str):
         # Set the server address
         self.server_address: str = server_address

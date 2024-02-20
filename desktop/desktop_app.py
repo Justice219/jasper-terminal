@@ -1,9 +1,14 @@
 import os
 import sys
-# import the SocketsServer class from the sockets_server.py file
+import asyncio
+
+# add the root directory to the path
+# I cant figure out how to avoid this :(
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from networking.sockets_server import SocketsServer
 
-class MeridiumApp:
+class DesktopApp:
     def __init__(self):
         self.name = "Jasper Desktop App"
         self.sockets_server = SocketsServer()
@@ -14,3 +19,10 @@ class MeridiumApp:
     async def run(self):
         print(f"{self.name} is running")
         await self.sockets_server.start_server()
+    
+async def Main():
+    app = DesktopApp()
+    await app.run()
+
+if __name__ == "__main__":
+    asyncio.run(Main())
