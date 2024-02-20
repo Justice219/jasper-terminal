@@ -1,7 +1,7 @@
 from pages import home, clean, tweaks  # Explicitly import the needed modules
 import router as router_c
 import asyncio
-from networking.sockets_client import SocketsClient
+from ..networking.sockets_client import SocketsClient
 
 from nicegui import app, ui
 

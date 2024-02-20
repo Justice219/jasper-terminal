@@ -2,10 +2,6 @@ import os
 import subprocess
 import sys
 
-desktop_path = os.path.join(os.getcwd(), 'desktop')
-web_path = os.path.join(os.getcwd(), 'web')
-
-# run web app in a subprocess
-subprocess.Popen([sys.executable, os.path.join(web_path, 'web_app.py')])
-# run desktop app in a subprocess
-subprocess.Popen([sys.executable, os.path.join(desktop_path, 'desktop_app.py')])
+# run desktop_app.py in a subprocess from the desktop directory
+# this is necessary to ensure that the desktop app runs in the correct directory
+subprocess.run([sys.executable, 'desktop_app.py'], cwd=os.path.join(os.path.dirname(__file__), 'desktop'))
