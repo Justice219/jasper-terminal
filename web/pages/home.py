@@ -59,7 +59,8 @@ def content(ui, app, sockets) -> None:
 
             # Row for command input and send button
             with ui.row().classes("command-input-row"):
-                box = ui.input(placeholder="Enter command here, ex. ping").classes("command-input").props('outlined input-style="color: white" dense')
+                options=["ping", "stop", "print", "run"]
+                box = ui.input(placeholder="Enter command here, ex. ping", autocomplete=options).classes("command-input").props('outlined input-style="color: white"  dense')
                 ui.button('Send', on_click=(lambda: sockets.send_message(box.value))).classes("send-button")
     
     # return these so we can handle
