@@ -4,7 +4,8 @@ from typing import Set, Dict, Any
 import websockets
 from websockets.server import WebSocketServerProtocol
 from nicegui import ui
-import socket
+
+from networking.command_handler import CommandHandler
 
 CONNECTIONS: Set[WebSocketServerProtocol] = set()
 
@@ -15,33 +16,21 @@ logger = logging.getLogger(__name__)
 # Define the SocketsServer class
 class SocketsServer():
     def __init__(self):
+        self.command_handler = CommandHandler(self, "server")
         logger.info('SocketsServer initialized')
 
-    # Define the start method
+    # Define the handle_message method
     async def handle_message(self, websocket: WebSocketServerProtocol) -> None:
-        while True:       
+        while True:
             try:
-                # Receive the message from the client
                 message = await websocket.recv()
                 logger.info(f"Received message: {message}")
-
-                # command map
-                command, *args = message.split(" ")
-                action_map: Dict[str, Any] = {
-                    "ping": lambda: self.send_message("PONG : Successful Client Handshake"),
-                    "stop": lambda: self.stop_server(),
-                }
-
-                if command in action_map:
-                    action = action_map[command]
-                    await action()
-
-            # Handle the exceptions
+                command, *args = message.split(":", 1)
+                await self.command_handler.handle_command(command, args[0] if args else "")
             except websockets.exceptions.ConnectionClosed as e:
                 logger.info(f"Connection closed with error: {e}")
                 CONNECTIONS.remove(websocket)
                 break
-            # Handle the exceptions
             except Exception as e:
                 logger.error(f"Error receiving message: {e}")
                 break

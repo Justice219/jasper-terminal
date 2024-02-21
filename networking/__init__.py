@@ -1,1 +1,1 @@
-__all__ = ["sockets_client", "sockets_server"]
+__all__ = ["sockets_client", "sockets_server", "command_handler"]

@@ -8,43 +8,59 @@ from styling import theme
 from nicegui import ui
 
 def content(ui, app, sockets) -> None:
-    with theme.frame('- Home -'):
-        with ui.card().style('background-color: #242424; color: #ffffff; border: none; width: 150%;') as card:
-            # header
-            ui.label('Welcome to Meridium!').style('font-size: 24px; font-weight: bold;')
-            
-            ui.html('''
-            <p>
-                Meridium is a web app that allows you to control your desktop from your browser!
-                You can do things like clean your recycle bin, clean your browser data, and more!
-                Meridium is a work in progress and is being developed by <a href="https://github.com/Justice219/meridium" style="color: #f23a3a;">Justice219</a>
-                    </p>
-            ''').style('font-size: 16px;')
+    ui.add_head_html('''
+        <style>
+            .terminal-container {
+                background-color: #333; /* Dark background for terminal */
+                color: #fff; /* White text color */
+                padding: 20px;
+                border-radius: 5px;
+                width: 100%;
+                max-width: 600px; /* Maximum width of terminal */
+                overflow-y: auto; /* Make terminal scrollable */
+                height: 300px; /* Fixed height for terminal */
+                margin-bottom: 20px;
+            }
+            .terminal-message {
+                background: #222; /* Slightly darker background for messages */
+                padding: 5px 10px;
+                border-radius: 4px;
+                margin-bottom: 5px;
+            }
+            .command-input-row {
+                width: 100%;
+                max-width: 600px; /* Align input width with terminal */
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between; /* Space between input and button */
+                margin-bottom: 20px;
+            }
+            .command-input {
+                flex-grow: 1; /* Input field takes up remaining space */
+                margin-right: 10px; /* Space between input and button */
+            }
+            .send-button {
+                white-space: nowrap; /* Prevent button text from wrapping */
+            }
+        </style>
+    ''')
 
-            ui.html('''
-            <p> 
-                Meridium uses websockets to communicate with a <span style="color: #e8234a;">desktop subprocess</span>, which controls the desktop.
-                This project was an experiment to learn how to use <span style="color: #e8234a;">websockets</span>, and create a server/client application.
-                The desktop subprocess is written in Python, and the web app is written in Python using the NiceGUI package.
-                <br></br>
-                This project may not be the most <span style="color: #e8234a;">SECURE</span>, and is not recommended for use in a production environment.
-                However, it does work as intended, and is a fun project to play around with!
-                
-            </p>
-            ''').style('font-size: 16px;')
+    with theme.frame("Terminal"):
+        # div to center the terminal
+        with ui.column().classes('absolute-center items-center').style('width: 100%;'):
+            # Terminal-like container for incoming messages
+            messages = ui.column().classes('terminal-container')
 
-        ui.label('incoming messages:')
-        messages = ui.column().classes('ml-4')
-        
-        async def display_messages(message: str) -> None:
-            def update_ui():
-                messages.append(ui.label(message))
+            async def display_messages(message: str, ui) -> None:
+                with messages:
+                    ui.label(message).classes('terminal-message')
 
-            ui.run(update_ui)
+            sockets.register_callback(display_messages)
 
-        sockets.register_callback(display_messages)
-
-        # enter command to send to server
-        ui.input(label='Send Command', placeholder='Enter command',
-                on_change=lambda e: sockets.send_message(str(e.value)))
-        
+            # Row for command input and send button
+            with ui.row().classes("command-input-row"):
+                box = ui.input(placeholder="Enter command here, ex. ping").classes("command-input").props('outlined input-style="color: white" dense')
+                ui.button('Send', on_click=(lambda: sockets.send_message(box.value))).classes("send-button")
+    
+    # return these so we can handle
+    return messages

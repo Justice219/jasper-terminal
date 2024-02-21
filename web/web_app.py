@@ -2,6 +2,7 @@
 import os
 import asyncio
 import sys
+import logging
 # add the root directory to the path
 # I cant figure out how to avoid this :(
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -12,6 +13,10 @@ import router as router_c
 
 # Socket client import
 from networking.sockets_client import SocketsClient
+
+# Initialize simpler logging as per the new preference
+logging.basicConfig(level=logging.INFO, format='CLIENT: %(message)s')
+logger = logging.getLogger(__name__)
 
 # NiceGUI imports
 from nicegui import app, ui
@@ -24,7 +29,7 @@ class WebApp:
         self.app = app
         self.ui = ui
         self.router = router_c.router  # Use a more descriptive name for the router
-        self.sockets_client = SocketsClient(server_address='ws://localhost:4327')
+        self.sockets_client = SocketsClient(server_address='ws://localhost:4327', app=self.app, ui=self.ui)
         self.sockets_client.register_callback(self.handle_message)
         self.initialize_pages()
 
@@ -65,27 +70,39 @@ class WebApp:
         self.app.on_startup(self.sockets_client.connect)
         self.ui.run(title='Meridium Web App')
 
-    async def handle_message(self, message: str):
-        command, *args = message.split(" ")
+    async def handle_message(self, message: str, ui):
+        command, *args = message.split(":")
         action_map = {
-            "ping": lambda: self.sockets_client.send_message("PONG"),
-            "PONG": lambda: self.notify("Successful Server Handshake", "info"),
-            "RECEIVED": lambda: self.notify(f"Received message: {' '.join(args)}", "info"),
+            "ping": lambda: self.sockets_client.send_message("pong:Successful Client Handshake:no_args"),
+            "pong": lambda: logger.info("Successful Server Handshake"),
+            "recieved": lambda: logger.info(f"Recieved message: {args}"),
+            "executed": lambda: logger.info(f"Executed command: {args}"),
         }
 
         if command in action_map:
+            # 1 = command, 2 = description, 3 = args , all split with :
             action = action_map[command]
             # Log the action dynamically
-            action_description = command[4:].lower().replace('files', '').replace('data', '').replace('_', ' ')
-            print(f"CLIENT: Received message from web app to {action_description}")
+            logger.info("-------------------")
+            logger.info(f"Executing action for command: {command}")
+            logger.info(f"Description: {args[0]}")
+            logger.info(f"Args: {args[1:]}")
+            logger.info("-------------------")
+            
 
-            # Call the action with or without "message" based on its requirement
+            # Ensure the action is callable and handle async vs sync appropriately
             if callable(action):
-                await action()  # Calls the lambda or function directly
+                result = action()  # Execute the lambda or function
+                if asyncio.iscoroutine(result):
+                    await result  # Await the result if it's a coroutine
+                else:
+                    # Handle synchronous action if not a coroutine
+                    print(f"CLIENT: Executed synchronous action for command: {command}\n")
             else:
                 print(f"CLIENT: Unknown command or mismatch in parameters for: {command}")
         else:
             print(f"CLIENT: Unknown command: {command}")
+
 
 app = WebApp()
 app.run()

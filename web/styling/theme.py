@@ -13,7 +13,7 @@ def frame(navtitle: str):
     ui.query('body').style('background-color: #242424; color: #ffffff;')
 
     with ui.header().classes('justify-between text-white'):
-        ui.label('Meridium Web App 1.1').classes('font-bold')
+        ui.label('Jasper 0.1').classes('font-bold')
         ui.label(navtitle)
         with ui.row():
             menu()
@@ -21,10 +21,10 @@ def frame(navtitle: str):
     yield
 
     # Footer with GitHub link
-    with ui.footer().classes('justify-center text-white'):
-        with ui.row().classes("justify-center items-center"):
-            ui.label('Developed by Justice219').style('font-weight: bold;')
-            ui.button(icon='eva-github', on_click=lambda: ui.open("https://github.com/Justice219/meridium", new_tab=True)).classes('text-3xl').style('position: absolute; right: 0; padding-right: 20px;')
+    #with ui.footer().classes('justify-center text-white'):
+        #with ui.row().classes("justify-center items-center"):
+           # ui.label('Developed by Justice219').style('font-weight: bold;')
+            #ui.button(icon='eva-github', on_click=lambda: ui.open("https://github.com/Justice219/meridium", new_tab=True)).classes('text-3xl').style('position: absolute; right: 0; padding-right: 20px;')
 
 @contextmanager
 def box(title: str, style: Optional[Dict[str, str]] = None):
