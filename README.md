@@ -2,25 +2,26 @@
 
 ## Description
 
-Jasper Terminal is a comprehensive Python project aimed at providing a unified interface for desktop and web applications, with a focus on networking and communication. It's designed to be lightweight, extensible, and easy to use, making it an ideal choice for developers looking to integrate various applications or services.
+Jasper Terminal is a comprehensive Python project aimed at providing a web based terminal to control computer applications.
+This project was a learning project to learn websockets and improve my python skills.
 
 ## Installation
 
 To get started with Jasper Terminal, you'll need Python 3.6 or newer. Clone the repository and install the required dependencies:
 
-\```bash
+```bash
 git clone https://github.com/yourusername/jasper-terminal.git
 cd jasper-terminal
 pip install -r requirements.txt
-\```
+```
 
 ## Usage
 
 After installation, you can run Jasper Terminal by executing the `main.py` script:
 
-\```bash
+```bash
 python main.py
-\```
+```
 
 This will start the terminal application. For web and desktop-specific functionalities, navigate to the respective directories (`desktop` or `web`) and follow the instructions provided there.
 
@@ -42,7 +43,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- Thanks to all the contributors who have helped shape Jasper Terminal into what it is today.
 - Special thanks to open-source projects that provided inspiration and code snippets.
 
 For more detailed information on the project's structure and components, please refer to the specific directories and files within the project.
